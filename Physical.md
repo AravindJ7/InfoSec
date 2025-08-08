@@ -79,11 +79,3 @@ Specialized professionals (e.g., **Red Teamers**) simulate attacks to find vulne
 - Must be part of a **comprehensive InfoSec strategy**
 
 ---
-
-## Table of Contents
-- Introduction
-- InfoSec Domains
-- Threats
-- Cybersecurity Teams
-- Job Roles
-- My Workstation
