@@ -458,3 +458,159 @@ If an attacker is able to find flaws in an authentication mechanism, they might 
 ## Summary
 
 Authentication and session management are critical for securing web applications. Poorly implemented mechanisms open the door to account takeover, data breaches, and other attacks. Strong credential policies, brute force protection, MFA, and secure session handling are essential defenses against **broken authentication vulnerabilities**.
+
+# Integrity and Software/Data Integrity Failures
+
+## What is Integrity?
+
+In cybersecurity, **integrity** refers to the assurance that data remains unmodified and trustworthy. Maintaining integrity ensures that important data is free from unwanted or malicious changes.
+
+For example, when downloading software, you want to ensure the installer wasn't tampered with or corrupted during transmission. To achieve this, software providers often include **hashes** (checksums) alongside their downloads.
+
+A **hash** is the result of applying a mathematical algorithm (e.g., MD5, SHA1, SHA256) to a piece of data. Any small modification to the data produces a completely different hash value.
+
+---
+
+## Example: Verifying File Integrity with Hashes
+
+Let's take **WinSCP** as an example. On its Sourceforge repository, developers publish the expected hashes for each file.
+
+After downloading `WinSCP-5.21.5-Setup.exe`, you can calculate the file’s hashes on Linux:
+
+```bash
+user@attackbox$ md5sum WinSCP-5.21.5-Setup.exe          
+20c5329d7fde522338f037a7fe8a84eb  WinSCP-5.21.5-Setup.exe
+                                                                                                                
+user@attackbox$ sha1sum WinSCP-5.21.5-Setup.exe 
+c55a60799cfa24c1aeffcd2ca609776722e84f1b  WinSCP-5.21.5-Setup.exe
+                                                                                                                
+user@attackbox$ sha256sum WinSCP-5.21.5-Setup.exe 
+e141e9a1a0094095d5e26077311418a01dac429e68d3ff07a734385eb0172bea  WinSCP-5.21.5-Setup.exe
+```
+
+Since the calculated hashes match the published ones, we can conclude that the file has **integrity** and has not been tampered with.
+
+---
+
+## Software and Data Integrity Failures
+
+A **software or data integrity failure** occurs when applications rely on code or data without verifying its integrity. This can allow attackers to modify the code or data, leading to malicious outcomes.
+
+### 1. Software Integrity Failures
+
+Consider a website that includes **third-party libraries** hosted externally (e.g., jQuery):
+
+```html
+<script src="https://code.jquery.com/jquery-3.6.1.min.js"></script>
+```
+
+If attackers compromise the jQuery repository, they could inject malicious code. Since the website performs no integrity checks, users visiting the site would unknowingly execute the malicious code in their browsers.
+
+✅ The solution is to use **Subresource Integrity (SRI)**, which ensures that browsers only execute the resource if its hash matches the expected value:
+
+```html
+<script src="https://code.jquery.com/jquery-3.6.1.min.js" 
+        integrity="sha256-o88AwQnZB+VDvE9tvIXrMQaPlFFSUTR+nldQm1LuPXQ=" 
+        crossorigin="anonymous"></script>
+```
+
+You can generate SRI hashes at: [https://www.srihash.org/](https://www.srihash.org/)
+
+### 2. Data Integrity Failures
+
+This type of failure occurs when **data used by applications is not validated for integrity**. For example, configuration files, logs, or transmitted data could be altered by attackers if not protected with hashing or digital signatures.
+
+---
+
+## Summary
+
+- **Integrity** ensures that data is unaltered and trustworthy.  
+- **Hashes** are widely used to verify file integrity.  
+- **Software Integrity Failures** happen when applications use third-party libraries without verifying them (solution: Subresource Integrity).  
+- **Data Integrity Failures** occur when application data is not validated for tampering.  
+
+Ensuring integrity is crucial for preventing malicious modifications in both software and data.
+# Data Integrity Failures
+
+## Overview
+Data integrity failures occur when applications trust data that can be modified or tampered with by an attacker. Integrity mechanisms are essential to ensure that sensitive values (such as cookies, tokens, or session identifiers) have not been altered.
+
+---
+
+## Cookies and Session Management
+When a user logs into an application, they are typically assigned a **session token** stored in the browser (commonly via cookies). The browser automatically sends this token with each subsequent request to maintain the session.
+
+### Example: Weak Session Cookies
+Suppose a webmail application assigns a cookie containing only the username after login.  
+- If the user tampers with the cookie and changes the username, they could impersonate another user.  
+- This constitutes a **data integrity failure** because the system trusts user-modifiable data.
+
+---
+
+## JSON Web Tokens (JWT)
+A solution to ensure integrity is to use **JWTs (JSON Web Tokens)**. JWTs allow key-value pairs to be stored securely, with built-in integrity mechanisms.
+
+### Structure of a JWT
+A JWT consists of **3 base64-encoded parts**:
+1. **Header** → metadata (e.g., type: JWT, algorithm: HS256)
+2. **Payload** → claims or key-value pairs (e.g., username, expiry)
+3. **Signature** → ensures payload integrity, generated using a secret key
+
+If the payload is modified, the signature check fails unless the attacker has access to the secret key.
+
+---
+
+## JWT None Algorithm Vulnerability
+Some vulnerable JWT libraries previously allowed attackers to bypass integrity checks by:  
+1. Modifying the header to set `"alg": "none"`  
+2. Removing the signature part  
+
+### Example:
+Original token:
+eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VybmFtZSI6Imd1ZXN0IiwiZXhwIjoxNjY1MDc2ODM2fQ.C8Z3gJ7wPgVLvEUonaieJWBJBYt5xOph2CpIhlxqdUw
+
+Tampered token with `"alg":"none"` and modified payload:
+eyJ0eXAiOiJKV1QiLCJhbGciOiJub25lIn0.eyJ1c2VybmFtZSI6ImFkbWluIn0.
+
+This allows attackers to impersonate users such as `admin`.  
+
+---
+
+# Logging and Monitoring
+
+## Importance of Logging
+When applications are deployed, **every user action should be logged**. Logs are critical for:  
+- **Incident response** → tracing attacker actions  
+- **Regulatory compliance** → accountability in case of breaches  
+- **Risk mitigation** → identifying further attacker presence  
+
+### Information to Log
+- HTTP status codes  
+- Timestamps  
+- Usernames  
+- API endpoints / page locations  
+- IP addresses  
+
+Logs often contain sensitive data, so they must be securely stored, ideally with multiple backups.
+
+---
+
+## Suspicious Activity Detection
+Monitoring helps detect unusual or malicious behavior. Examples include:  
+- Multiple failed authentication attempts  
+- Requests from unusual IPs or geolocations  
+- Use of automated tools (detected via User-Agent headers or abnormal request frequency)  
+- Known malicious payloads in requests  
+
+### Risk-Based Response
+Not all suspicious activity is equal. Activities should be assigned **impact levels**:  
+- **High Impact** → e.g., repeated login failures, access to admin panels → should trigger alarms  
+- **Medium/Low Impact** → less severe but still logged for investigation  
+
+---
+
+## Key Takeaways
+- Integrity must be enforced on session tokens and sensitive data.  
+- JWTs provide a reliable mechanism if implemented correctly.  
+- Weak JWT implementations (e.g., allowing `alg: none`) are dangerous.  
+- Logging and monitoring are essential for **detecting, investigating, and responding** to security incidents.  
