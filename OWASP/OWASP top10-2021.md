@@ -295,3 +295,53 @@ The main defence for preventing injection attacks is ensuring that **user-contro
 Dangerous characters or input is classified as any input that can **change how the underlying data is processed**.  
 
 Instead of manually constructing allow lists or stripping input, various **libraries exist** that can perform these actions for you.
+# Insecure Design
+
+Insecure design refers to vulnerabilities that are inherent to the application's **architecture**.  
+They are not caused by **bad implementations** or **misconfigurations**, but rather because the **concept or idea** behind the application (or part of it) is flawed from the start.  
+
+Most of the time, these vulnerabilities occur when **improper threat modelling** is done during the planning phases of the application and propagate all the way up to the final product.  
+
+Sometimes, insecure design vulnerabilities may also be introduced by developers while adding **shortcuts** for testing purposes.  
+For example, a developer could disable OTP validation during development to speed up testing, but forget to re-enable it when sending the application to production.
+
+---
+
+## Example: Insecure Password Resets (Instagram Case)
+
+A well-known example of insecure design was found in Instagram's password reset mechanism:  
+
+- Users could reset forgotten passwords by receiving a **6-digit code** via SMS.  
+- To brute-force such a code, an attacker would have to try **1,000,000 possible combinations**.  
+
+### Bruteforce Limitation
+- Instagram implemented **rate-limiting**: after **250 attempts per IP**, further attempts were blocked.  
+- This should have made brute-forcing infeasible.  
+
+### The Flaw
+- The **rate-limit applied only per IP address**.  
+- An attacker with access to multiple IPs could bypass the protection.  
+
+### Distributed Bruteforcing
+- With cloud services, attackers could cheaply rent thousands of IPs.  
+- Example calculation:  
+ 
+ - While 4,000 IPs may sound extreme, it was **feasible with cloud infrastructure**.  
+
+---
+
+## Why This Was Insecure Design
+- The system’s design assumed that no user could distribute login attempts across thousands of IPs.  
+- The flaw wasn’t in implementation (rate-limiting existed), but in the **core idea** of how the security model was designed.  
+1,000,000 codes / 250 attempts per IP = 4,000 IPs required
+---
+
+## Mitigation & Prevention
+
+Since insecure design vulnerabilities are introduced at such an **early stage**, fixing them often requires **rebuilding core parts** of the application — much harder than fixing simple code bugs.  
+
+### Best Practices:
+✔ Perform **threat modelling** early in the development lifecycle.  
+✔ Anticipate **realistic attacker capabilities** (e.g., distributed attacks, cloud services).  
+✔ Avoid relying on **single-point mitigations** (like IP-based rate limiting).  
+✔ Use **multi-layered defences** (e.g., CAPTCHAs, device fingerprinting, risk-based authentication).  
