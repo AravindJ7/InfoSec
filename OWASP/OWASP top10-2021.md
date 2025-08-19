@@ -180,3 +180,80 @@ IDOR = Direct object references (IDs, files, keys) exposed without validation.
 Impact: Data leaks, account takeover, privilege escalation, system compromise.
 
 Defense: Enforce server-side checks, deny by default, use indirect references, test regularly.
+# Broken Access Control & IDOR
+
+## 1. Broken Access Control
+
+### Definition
+Broken Access Control is a critical web application security risk that occurs when applications fail to enforce proper restrictions on what authenticated users can do. This vulnerability allows attackers to bypass authorization and gain access to resources or perform actions outside their intended permissions.
+
+### Examples
+- Accessing another user's account by changing the user ID in the URL.
+- Modifying data without appropriate privileges.
+- Accessing admin functionalities as a normal user.
+
+### Common Issues
+- **Insecure Direct Object Reference (IDOR)**
+- **Missing Function Level Access Control**
+- **Force Browsing** – Accessing pages without authentication.
+
+### Impact
+- Unauthorized data exposure (confidential information leaks).
+- Data modification or deletion.
+- Privilege escalation (normal user becoming admin).
+- Complete compromise of application integrity.
+
+### Mitigation
+- Implement **server-side access control checks** for every request.
+- Follow **principle of least privilege**.
+- Use **deny by default** access policies.
+- Avoid relying on security through obscurity (e.g., hidden URLs).
+- Perform regular access control testing.
+
+---
+
+## 2. IDOR (Insecure Direct Object Reference)
+
+### Definition
+IDOR is a specific type of Broken Access Control vulnerability where an attacker manipulates input (like user ID, file ID, or record number) to directly access objects they are not authorized to access.
+
+### Example
+Suppose a banking application provides transaction details at:
+```
+https://bank.com/transactions?user_id=123
+```
+If the application does not validate whether the logged-in user owns `user_id=123`, an attacker can modify it to `user_id=124` and access another user's transactions.
+
+### Real-World Example
+- **Facebook Bug Bounty (2012):** Attackers could access private photos by manipulating object IDs in requests.
+- **GitHub (2014):** A vulnerability allowed unauthorized access to private repositories.
+
+### Impact
+- Exposure of sensitive user data (PII, financial, health records).
+- Account takeover or impersonation.
+- Unauthorized file downloads or modifications.
+
+### Mitigation
+- Never trust user-supplied input for authorization.
+- Implement **object-level authorization checks** on the server side.
+- Use **randomized, non-sequential identifiers** (e.g., UUIDs instead of incremental IDs).
+- Perform **penetration testing** to identify IDOR vulnerabilities.
+
+---
+
+## 3. Relationship Between Broken Access Control & IDOR
+
+- **Broken Access Control** is the broader category of security flaws where access restrictions are not properly enforced.
+- **IDOR** is a **subtype of Broken Access Control**, specifically involving direct references to objects (IDs, filenames, keys) without proper authorization checks.
+
+### Analogy
+- Think of **Broken Access Control** as an unlocked building with multiple rooms.
+- **IDOR** is when someone enters another person’s room by simply changing the room number on the door.
+
+---
+
+## 4. Best Practices for Developers
+- Enforce **authorization checks on every request** (not just authentication).
+- Use **role-based or attribute-based access control models**.
+- Log and monitor all access control failures.
+- Educate developers about OWASP Top 10 vulnerabilities, especially **Broken Access Control** and **IDOR**.
