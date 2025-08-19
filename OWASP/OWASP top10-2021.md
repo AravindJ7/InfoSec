@@ -257,3 +257,4 @@ If the application does not validate whether the logged-in user owns `user_id=12
 - Use **role-based or attribute-based access control models**.
 - Log and monitor all access control failures.
 - Educate developers about OWASP Top 10 vulnerabilities, especially **Broken Access Control** and **IDOR**.
+ ---
