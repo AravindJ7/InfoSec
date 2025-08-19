@@ -131,7 +131,7 @@ Access control ensures **who** (user, role, identity) can perform **what** (acti
 
 ## 🚨 IDOR – Examples
 ### 1. URL Parameter Manipulation
-```http
+http
 GET /account?id=101   → Your account
 GET /account?id=102   → Another user’s account (if no check)
 2. File Access
@@ -180,6 +180,7 @@ IDOR = Direct object references (IDs, files, keys) exposed without validation.
 Impact: Data leaks, account takeover, privilege escalation, system compromise.
 
 Defense: Enforce server-side checks, deny by default, use indirect references, test regularly.
+---
 # Broken Access Control & IDOR
 
 ## 1. Broken Access Control
