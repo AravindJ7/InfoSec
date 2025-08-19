@@ -408,3 +408,53 @@ This makes the situation extremely dangerous because:
 
 ## Key Takeaway
 Even a **single missed update** can expose the entire system to catastrophic attacks. Keeping all components up-to-date and monitoring for known vulnerabilities is essential to maintaining security.
+
+# Authentication and Session Management
+
+Authentication and session management constitute core components of modern web applications. Authentication allows users to gain access to web applications by verifying their identities. The most common form of authentication is using a **username and password mechanism**. A user would enter these credentials, and the server would verify them. 
+
+If successful, the server provides the users' browser with a **session cookie**. A session cookie is needed because web servers use HTTP(S) to communicate, which is stateless. Attaching session cookies ensures the server knows who is sending what data, allowing it to keep track of users' actions.
+
+---
+
+## Risks of Broken Authentication
+
+If an attacker is able to find flaws in an authentication mechanism, they might successfully gain access to other users' accounts. This could allow the attacker to access sensitive data (depending on the purpose of the application).
+
+### Common Flaws in Authentication Mechanisms
+
+1. **Brute Force Attacks**
+   - Attackers repeatedly attempt login with different username/password combinations.
+   - Without protections, they can eventually guess valid credentials.
+
+2. **Use of Weak Credentials**
+   - Applications that allow weak or commonly used passwords (e.g., `password1`, `123456`) are vulnerable.
+   - Attackers can easily guess these and gain unauthorized access.
+
+3. **Weak Session Cookies**
+   - Session cookies are used by the server to keep track of users.
+   - If these cookies contain predictable values, attackers can forge their own cookies and hijack user sessions.
+
+---
+
+## Mitigation Strategies
+
+1. **Strong Password Policy**
+   - Enforce strong password requirements (minimum length, complexity, no common passwords).
+
+2. **Brute Force Protection**
+   - Implement account lockout or temporary blocking after multiple failed login attempts.
+
+3. **Multi-Factor Authentication (MFA)**
+   - Add an additional layer of verification such as SMS/email OTP, authenticator apps, or hardware tokens.
+
+4. **Secure Session Management**
+   - Use cryptographically secure, unpredictable session cookies.
+   - Set secure cookie attributes like `HttpOnly`, `Secure`, and `SameSite`.
+   - Implement session expiration and re-authentication for sensitive actions.
+
+---
+
+## Summary
+
+Authentication and session management are critical for securing web applications. Poorly implemented mechanisms open the door to account takeover, data breaches, and other attacks. Strong credential policies, brute force protection, MFA, and secure session handling are essential defenses against **broken authentication vulnerabilities**.
