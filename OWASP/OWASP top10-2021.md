@@ -676,9 +676,13 @@ GET /:8087/public-docs/123.pdf HTTP/1.1
 Host: 10.10.10.11
 User-Agent: PycURL/7.45.1 libcurl/7.83.1 OpenSSL/1.1.1q zlib/1.2.12 brotli/1.0.9 nghttp2/1.47.0
 Accept: */*
-The attacker now has access to the request (and possibly the API key).
+ ```
 
-Impact of SSRF
+
+The attacker now has access to the request (and possibly the API key).
+---
+
+# Impact of SSRF
 
 Although the above is a basic case, SSRF can be extremely dangerous. Depending on the scenario, SSRF can be used to:
 
@@ -694,7 +698,7 @@ Remote Code Execution (RCE)
 
 Interact with non-HTTP services and possibly achieve full compromise of the system.
 
-Key Takeaway
+# Key Takeaway
 
 SSRF vulnerabilities allow attackers to:
 
